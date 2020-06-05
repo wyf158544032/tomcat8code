@@ -530,12 +530,18 @@ public class Catalina {
 
         long t1 = System.nanoTime();
 
+        //初始化java.io 临时文件夹
         initDirs();
 
         // Before digester - it may be needed
+        //这个方法有什么作用?
         initNaming();
 
         // Create and execute our Digester
+        /**
+         * 创建digester，该对象的作用就是为解析server.xml ，加载具体属性 时使用的类，或者抽象接口
+         * 比如加载Listener 属性 使用org.apache.catalina.LifecycleListener
+         */
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;
@@ -543,6 +549,7 @@ public class Catalina {
         File file = null;
         try {
             try {
+            	//server.xml文件
                 file = configFile();
                 inputStream = new FileInputStream(file);
                 inputSource = new InputSource(file.toURI().toURL().toString());
@@ -625,6 +632,9 @@ public class Catalina {
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
 
         // Stream redirection
+        /**
+         * 数据流重定向，替换系统输出以及系统错误使用自定义打印流
+         */
         initStreams();
 
         // Start the new server

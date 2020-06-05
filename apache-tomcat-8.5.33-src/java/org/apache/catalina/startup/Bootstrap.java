@@ -60,7 +60,12 @@ public final class Bootstrap {
     private static final File catalinaHomeFile;
 
     private static final Pattern PATH_PATTERN = Pattern.compile("(\".*?\")|(([^,])*)");
-
+    
+    /**
+     * 静态代码块 处理catalinaBaseFile，catalinaHomeFile ，始终保证这两个文件存在
+     * 问题 1 两个文件有什么作用?
+     *     2 两个文件有什么区别?
+     */
     static {
         // Will always be non-null
         String userDir = System.getProperty("user.dir");
@@ -254,6 +259,9 @@ public final class Bootstrap {
      */
     public void init() throws Exception {
 
+    	/**
+    	 * 初始化commonLoader,catalinaLoader,sharedLoader
+    	 */
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
@@ -458,9 +466,12 @@ public final class Bootstrap {
 
         if (daemon == null) {
             // Don't set daemon until init() has completed
+        	/**
+        	 * 为什么需要初始化完成之后在set daemon?
+        	 */
             Bootstrap bootstrap = new Bootstrap();
             try {
-                bootstrap.init();
+                bootstrap.init();//初始化
             } catch (Throwable t) {
                 handleThrowable(t);
                 t.printStackTrace();
@@ -474,12 +485,18 @@ public final class Bootstrap {
             Thread.currentThread().setContextClassLoader(daemon.catalinaLoader);
         }
 
+        /**
+         * 根据具体的参数来执行Tomcat的具体操作，默认start
+         */
         try {
             String command = "start";
             if (args.length > 0) {
                 command = args[args.length - 1];
             }
 
+            /**
+             * startd 重启操作
+             */
             if (command.equals("startd")) {
                 args[args.length - 1] = "start";
                 daemon.load(args);
@@ -488,6 +505,9 @@ public final class Bootstrap {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
+            	/**
+            	 * setAwait 作用是什么？
+            	 */
                 daemon.setAwait(true);
                 daemon.load(args);
                 daemon.start();
@@ -496,7 +516,7 @@ public final class Bootstrap {
                 }
             } else if (command.equals("stop")) {
                 daemon.stopServer(args);
-            } else if (command.equals("configtest")) {
+            } else if (command.equals("configtest")) {//configtest 校验tomcat配置文件server.xml的格式、内容等是否合法、正确
                 daemon.load(args);
                 if (null == daemon.getServer()) {
                     System.exit(1);
