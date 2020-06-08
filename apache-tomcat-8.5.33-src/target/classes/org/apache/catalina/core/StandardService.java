@@ -530,11 +530,13 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
         super.initInternal();
 
+        //初始化engine
         if (engine != null) {
             engine.init();
         }
 
         // Initialize any Executors
+        //初始化线程池
         for (Executor executor : findExecutors()) {
             if (executor instanceof JmxEnabled) {
                 ((JmxEnabled) executor).setDomain(getDomain());

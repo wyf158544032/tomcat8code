@@ -826,24 +826,29 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     @Override
     protected void initInternal() throws LifecycleException {
 
+    	//.调用父类的init()方法
         super.initInternal();
 
         // Register global String cache
         // Note although the cache is global, if there are multiple Servers
         // present in the JVM (may happen when embedding) then the same cache
         // will be registered under multiple names
+        //.注册全局的String cache，作用是什么现在还不太清楚
         onameStringCache = register(new StringCache(), "type=StringCache");
 
         // Register the MBeanFactory
+        //注册MBean，使通过JMX能够监控
         MBeanFactory factory = new MBeanFactory();
         factory.setContainer(this);
         onameMBeanFactory = register(factory, "type=MBeanFactory");
 
         // Register the naming resources
+        //调用JNDI的init方法
         globalNamingResources.init();
 
         // Populate the extension validator with JARs from common and shared
         // class loaders
+        //对common和shared目录下的jar包进行校验，如果给出的jar文件包含MANIFEST，将被添加到container的manifest资源中
         if (getCatalina() != null) {
             ClassLoader cl = getCatalina().getParentClassLoader();
             // Walk the class loader hierarchy. Stop at the system class loader.
