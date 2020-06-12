@@ -130,6 +130,9 @@ public class Catalina {
     // ----------------------------------------------------------- Constructors
 
     public Catalina() {
+    	/**
+    	 * 问题：有什么作用？
+    	 */
         setSecurityProtection();
         ExceptionUtils.preload();
     }
@@ -534,13 +537,12 @@ public class Catalina {
         initDirs();
 
         // Before digester - it may be needed
-        //这个方法有什么作用?
+        //设置额外的环境变量，digester 可能会用到
         initNaming();
 
         // Create and execute our Digester
         /**
-         * 创建digester，该对象的作用就是为解析server.xml ，加载具体属性 时使用的类，或者抽象接口
-         * 比如加载Listener 属性 使用org.apache.catalina.LifecycleListener
+         * 创建digester，该对象的作用就是为定义sever.xml的解析规则，解析server.xml ，
          */
         Digester digester = createStartDigester();
 

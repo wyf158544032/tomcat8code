@@ -85,6 +85,13 @@ public interface Lifecycle {
 
     // ----------------------------------------------------- Manifest Constants
 
+	/***
+	 * lifecycle 定义了生命周期描述的字符串常量，定义了生命周期监听器的三方方法（添加，获取，移除），
+	 *           定义了组件执行的四个方法（初始化，启动，暂停，销毁），定义了获取当前组件的生命状态，生命状态名称
+	 * 
+	 * lifeCycle采用的是观察者模式,当组件在进行操作的时候，会通知相关监听器进行执行，
+	 * 比如StanarServer.startInternal()时会fireLifecycleEvent(CONFIGURE_START_EVENT, null);
+	 */
 
     /**
      * The LifecycleEvent type for the "component before init" event.

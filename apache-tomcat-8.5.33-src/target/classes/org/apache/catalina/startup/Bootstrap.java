@@ -153,6 +153,7 @@ public final class Bootstrap {
                 // no config file, default to this loader - we might be in a 'single' env.
                 commonLoader=this.getClass().getClassLoader();
             }
+            //catalinaLoader,sharedLoader 在Tomcat6 以后已经不在使用，在catalina.properties文件内内容已经注释，现在全部指向commonLoader
             catalinaLoader = createClassLoader("server", commonLoader);
             sharedLoader = createClassLoader("shared", commonLoader);
         } catch (Throwable t) {
@@ -261,11 +262,16 @@ public final class Bootstrap {
 
     	/**
     	 * 初始化commonLoader,catalinaLoader,sharedLoader
+    	 * 问题：类加载器有什么作用？ 
+    	 * answer：把Tomcat使用的jar类加载到内存中供程序使用
     	 */
         initClassLoaders();
 
         Thread.currentThread().setContextClassLoader(catalinaLoader);
 
+        /**
+         * 问题：什么作用？
+         */
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
         // Load our startup class and call its process() method
@@ -462,6 +468,7 @@ public final class Bootstrap {
      *
      * @param args Command line arguments to be processed
      */
+    //问题：Bootstrap 对Catalina的操作 为什么使用反射？
     public static void main(String args[]) {
 
         if (daemon == null) {
@@ -506,7 +513,9 @@ public final class Bootstrap {
                 daemon.stop();
             } else if (command.equals("start")) {
             	/**
-            	 * setAwait 作用是什么？
+            	 * 问题：setAwait 作用是什么？
+            	 * 通过反射调用Catalina.setAwait为true，目的是为了让Tomcat处于运行状态，接受http请求
+            	 * 如果设置false，Tomcat只是启动运行一遍就停止
             	 */
                 daemon.setAwait(true);
                 daemon.load(args);

@@ -58,6 +58,12 @@ public abstract class LifecycleBase implements Lifecycle {
     /**
      * {@inheritDoc}
      */
+    /**
+     * 监听器什么时候开始添加的？ lifecycle采用观察者模式，监听器的添加阶段不固定，随时在需要使用的地方添加即可
+     * 都添加了哪些监听器？添加了跟组件相关的监听器，种类较多比如
+     * server组件监听器（server.xml文件配置）NamingContextListener，VersionLoggerListener，AprLifecycleListener，JreMemoryLeakPreventionListener等
+     * 组件相关监听器比如EngineConfig，HostConfig，ContextConfig等
+     */
     @Override
     public void addLifecycleListener(LifecycleListener listener) {
         lifecycleListeners.add(listener);
@@ -96,6 +102,10 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
 
+    /**
+     * lifecycleBase的init,start,stop,destroy方法使用的是模板设计模式，这四个方法是线程安全的
+     * 模板的共性是设置组件状态，由lifecycleBase完成，个性在于initInternal,由组件实现
+     */
     @Override
     public final synchronized void init() throws LifecycleException {
         if (!state.equals(LifecycleState.NEW)) {
@@ -361,7 +371,7 @@ public abstract class LifecycleBase implements Lifecycle {
         if (log.isDebugEnabled()) {
             log.debug(sm.getString("lifecycleBase.setState", this, state));
         }
-
+      //设置状态，设置成功后通知监听器执行相关操作
         if (check) {
             // Must have been triggered by one of the abstract methods (assume
             // code in this class is correct)
@@ -389,6 +399,7 @@ public abstract class LifecycleBase implements Lifecycle {
             }
         }
 
+        //设置成功后通知监听器执行相关操作
         this.state = state;
         String lifecycleEvent = state.getLifecycleEvent();
         if (lifecycleEvent != null) {
@@ -396,6 +407,7 @@ public abstract class LifecycleBase implements Lifecycle {
         }
     }
 
+    //抛出自定义异常
     private void invalidTransition(String type) throws LifecycleException {
         String msg = sm.getString("lifecycleBase.invalidTransition", type,
                 toString(), state);
